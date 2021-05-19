@@ -35,15 +35,15 @@ Example:
 
 ~/.cargo/config.toml
 
-[registry]
+```[registry]
 default = "my-special-registry"
 
 [registries]
 my-special-registry = { index = "https://server/somepath.git" } # contains a mirror of crates.io 
 that has been deemed 'blessed', plus some enterprise-common source.
 crates-io-direct = { index = "http://crates.io" } # second level availability for development, but can't be used for production.
-my-super-secret-registry = { index = "https://server/someotherpath.git" } # the secret sauce
-my-super-secret-git = { index = "ssh://server/someotherpath.git" } # the other secret sauce
+my-super-secret-registry = { index = "" } # the secret sauce, so secret, it doesn't have a config.json
+my-secret-git = { index = "ssh://server/someotherpath.git" } # the other secret sauce, protected by ssh
 
 [source.crates-io]
 replace-with = "my-special-registry"
@@ -52,31 +52,40 @@ replace-with = "my-special-registry"
  # In production formal build, use a bogus name
  # replace-with = "do_not_check_in_crates_io_dependencies_jerkface"
 registry = { index = "http://crates.io" } 
-dl = "http://crates.io"
-api = "http://crates.io"
-http = {proxy = "socks5://myproxy:8908"}
+http = {proxy = "socks5://myexternalproxy:8908"}
 
 [source.my-special-registry]
 registry = "https://server/somepath.git"
 http = { proxy = "socks5://myinternalproxy:8080" }
 
+[source.my-super-secret-registry]
+registry = "https://sserver/somepath.git"
+dl = "https://sserver/artifactory/api/cargo/crates-io/v1/crates"
+api = "https://sserver/artifactory/api/cargo/crates-io"
+http = { proxy = "socks5://myinternalproxy:8080" }
+
+
 # Even if the super-secret-registry returned some values for dl and api, we're overriding them.
-[source.my-super-secret-git]
+[source.my-secret-git]
 dl = "https://server/someotherotherpath.git"
 api = "https://server/someotherotherpath.git"
 net = {git-fetch-with-cli = true}
-
+```
 Credentials.toml:
+```
+[registries.my-super-secret-registry]
+# not gorgeous, but coherent.
+credential-process = "cargo-credential-gnome-secret get | awk '{print \"X-Auth-Token: \\\"\"$0\"\\\"\"; print \"SpecialHeader: \\"foobar\\"}'"
 
 [registries.my-special-registry.update]
-headers = {"Authentication": "Bearer biglongtoken"}
+headers = ["Authentication"= "Bearer biglongtoken"]
 
 [registries.my-special-registry.index]
-headers = {"Authentication": "simpletoken"}
+headers = ["Authentication": "simpletoken"]
 
 [registries.my-special-registry.download]
-headers = {"Authentication": "simpletoken"}
-
+headers = ["Authentication": "simpletoken"]
+```
 
 
 # Reference-level explanation
