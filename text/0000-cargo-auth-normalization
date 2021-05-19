@@ -16,7 +16,7 @@ Initially, the issue was a jfrog private artifactory behind a proxy almost, but 
 # Guide-level explanation
 [guide-level-explanation]: #guide-level-explanation
 
-Enterprises with tight security policies around source who endeavor to maintain logged and authenticated access to their source use are a bit screwed.
+Enterprises with tight security policies around who can read and write source who endeavor to maintain logged and authenticated access to their source use are a bit screwed.
 
 This proposal adds the ability to configure different headers associated with each registry, and to populate header values with credentials.toml or credentials-process generated tokens under https.
 
@@ -35,49 +35,34 @@ my-super-secret-registry = { index = "https://server/someotherpath.git" } # the 
 [source.crates-io]
 replace-with = "my-special-registry"
 
-[source.crates-io-direct]
-# In production, use a bogus name
-# replace-with = "do_not_check_in_crates_io_dependencies_jerkface"
+[registries.crates-io-direct]
+ # In production, use a bogus name
+ # replace-with = "do_not_check_in_crates_io_dependencies_jerkface"
 registry = { index = "http://crates.io" } 
+dl = "http://crates.io"
+api = "http://crates.io"
+http = {proxy = "socks5://myproxy:8908"}
 
 [source.my-special-registry]
 registry = "https://server/somepath.git"
+http = { proxy = "socks5://myinternalproxy:8080" }
 
+# Even if the super-secret-registry returned some values for dl and api, we're overriding them.
 [source.my-super-secret-registry]
+dl = "https://server/someotherotherpath.git"
 api = "https://server/someotherotherpath.git"
-registry = "https://server/someotherotherpath.git"
-
-[net.my-special-registry]
-git-fetch-with-cli = true
-
-[http.crates-io-direct]
-proxy = "socks5://myproxy:8080"
-
-[http.my-special-registry]
-proxy = "socks5://myinternalproxy:8080"
-auth-for-download = "true
+net = {git-fetch-with-cli = true}
 
 Credentials.toml:
 
-  # These would override 
 [registries.my-special-registry.update]
 headers = {"Authentication": "Bearer biglongtoken"}
 
-[registries.my-special-registry.read]
+[registries.my-special-registry.index]
 headers = {"Authentication": "simpletoken"}
 
-
-In the case where the 
-
-Explain the proposal as if it was already included in the language and you were teaching it to another Rust programmer. That generally means:
-
-- Introducing new named concepts.
-- Explaining the feature largely in terms of examples.
-- Explaining how Rust programmers should *think* about the feature, and how it should impact the way they use Rust. It should explain the impact as concretely as possible.
-- If applicable, provide sample error messages, deprecation warnings, or migration guidance.
-- If applicable, describe the differences between teaching this to existing Rust programmers and new Rust programmers.
-
-For implementation-oriented RFCs (e.g. for compiler internals), this section should focus on how compiler contributors should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
+[registries.my-special-registry.download]
+headers = {"Authentication": "simpletoken"}
 
 # Reference-level explanation
 [reference-level-explanation]: #reference-level-explanation
