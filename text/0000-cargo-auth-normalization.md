@@ -22,6 +22,8 @@ This makes crates.io a more equal-among-peers, and allows different repos to hav
 JFrog just released its stuff a month ago or so, knowing of this outstanding issue: they took a good gamble on implementing crates support, 
 we can do our side, and can afford to repay dividends without disproportion or negatively affecting future growth or change.
 
+The particular benefit to these changes are floating on the back of the recently approved and implemented RFC [rust-lang/rfcs#194] 
+
 # Guide-level explanation
 [guide-level-explanation]: #guide-level-explanation
 
@@ -142,20 +144,6 @@ Please also take into consideration that rust sometimes intentionally diverges f
 # Future possibilities
 [future-possibilities]: #future-possibilities
 
-Think about what the natural extension and evolution of your proposal would
-be and how it would affect the language and project as a whole in a holistic
-way. Try to use this section as a tool to more fully consider all possible
-interactions with the project and language in your proposal.
-Also consider how this all fits into the roadmap for the project
-and of the relevant sub-team.
+It's very possible we won't have to mess with this in the future.
 
-This is also a good place to "dump ideas", if they are out of scope for the
-RFC you are writing but otherwise related.
-
-If you have tried and cannot think of any future possibilities,
-you may simply state that you cannot think of anything.
-
-Note that having something written down in the future-possibilities section
-is not a reason to accept the current or a future RFC; such notes should be
-in the section on motivation or rationale in this or subsequent RFCs.
-The section merely provides additional information.
+But, likely, deeper, pluginable crypto integration is a thing that might be needed.
